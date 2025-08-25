@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useParams, Link } from 'react-router-dom';
 import { ClockIcon, UsersIcon, CurrencyDollarIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { TokenPrices } from '@/components/markets/TokenPrices';
+import { MarketGraduation } from '@/components/markets/MarketGraduation';
 
 const MarketDetail = () => {
   const { id } = useParams();
@@ -110,37 +112,10 @@ const MarketDetail = () => {
             </Card>
           </div>
 
-          {/* Trading Sidebar */}
+            {/* Trading Sidebar */}
           <div className="space-y-6">
-            {/* Current Prices */}
-            <Card className="gradient-card border-border/50">
-              <CardHeader>
-                <CardTitle>Current Prices</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-success/10 border border-success/20 rounded-lg p-4 text-center">
-                    <div className="text-sm font-medium text-success mb-1">YES</div>
-                    <div className="text-2xl font-bold text-success">${market.yesPrice.toFixed(2)}</div>
-                    <div className="text-xs text-success/70">65% chance</div>
-                  </div>
-                  <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-center">
-                    <div className="text-sm font-medium text-destructive mb-1">NO</div>
-                    <div className="text-2xl font-bold text-destructive">${market.noPrice.toFixed(2)}</div>
-                    <div className="text-xs text-destructive/70">35% chance</div>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <Button className="w-full btn-quantum">
-                    Buy YES - $65.00
-                  </Button>
-                  <Button variant="outline" className="w-full btn-outline-quantum">
-                    Buy NO - $35.00
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Token Prices Component */}
+            <TokenPrices marketId={market.id} />
 
             {/* Market Info */}
             <Card className="gradient-card border-border/50">
@@ -167,9 +142,21 @@ const MarketDetail = () => {
               </CardContent>
             </Card>
 
+            {/* Market Graduation */}
+            <MarketGraduation
+              marketId={market.id}
+              canGraduate={true}
+              liquidityThreshold={1000000}
+              currentLiquidity={1250000}
+              volumeThreshold={500000}
+              currentVolume={680000}
+              timeThreshold={168}
+              marketAge={240}
+            />
+
             {/* Actions */}
             <Card className="gradient-card border-border/50">
-              <CardContent className="pt-6">
+              <CardContent className="pt-6 space-y-3">
                 <Link to={`/markets/${market.id}/propose`} className="block">
                   <Button variant="outline" className="w-full btn-outline-quantum">
                     Submit Proposal

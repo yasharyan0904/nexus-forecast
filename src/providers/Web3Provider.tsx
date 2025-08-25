@@ -1,11 +1,31 @@
 import { createConfig, http, WagmiProvider } from 'wagmi';
 import { mainnet, polygon, arbitrum } from 'wagmi/chains';
 import { injected, walletConnect } from 'wagmi/connectors';
+
+// Avalanche Fuji Testnet
+const avalancheFuji = {
+  id: 43113,
+  name: 'Avalanche Fuji',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Avalanche',
+    symbol: 'AVAX',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://api.avax-test.network/ext/bc/C/rpc'],
+    },
+  },
+  blockExplorers: {
+    default: { name: 'Snowtrace', url: 'https://testnet.snowtrace.io' },
+  },
+  testnet: true,
+} as const;
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 
 const config = createConfig({
-  chains: [mainnet, polygon, arbitrum],
+  chains: [avalancheFuji, mainnet, polygon, arbitrum],
   connectors: [
     injected(),
     walletConnect({ 
@@ -13,6 +33,7 @@ const config = createConfig({
     }),
   ],
   transports: {
+    [avalancheFuji.id]: http(),
     [mainnet.id]: http(),
     [polygon.id]: http(),
     [arbitrum.id]: http(),

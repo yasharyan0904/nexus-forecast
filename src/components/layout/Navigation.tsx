@@ -8,7 +8,8 @@ export function Navigation() {
   const navLinks = [
     { href: '/', label: 'Home', icon: ChartBarIcon },
     { href: '/markets', label: 'Markets', icon: CurrencyDollarIcon },
-    { href: '/create', label: 'Create', icon: PlusIcon },
+    { href: '/communities', label: 'Communities', icon: UserIcon },
+    { href: '/create', label: 'Create Market', icon: PlusIcon },
     { href: '/portfolio', label: 'Portfolio', icon: UserIcon },
   ];
 

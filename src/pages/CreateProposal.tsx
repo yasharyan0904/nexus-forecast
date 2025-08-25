@@ -24,9 +24,21 @@ const CreateProposal = () => {
     minDeposit: '0.1 ETH',
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitting proposal:', formData);
+    try {
+      // This would be replaced with actual contract interaction
+      console.log('Submitting proposal:', {
+        ...formData,
+        marketId: id,
+        deposit: market.minDeposit
+      });
+      
+      // Mock success - replace with actual contract call
+      alert('Proposal submitted successfully!');
+    } catch (error) {
+      console.error('Proposal submission failed:', error);
+    }
   };
 
   return (

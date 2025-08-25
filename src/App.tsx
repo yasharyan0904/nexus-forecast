@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Markets from "./pages/Markets";
 import MarketDetail from "./pages/MarketDetail";
+import Communities from "./pages/Communities";
 import CreateMarket from "./pages/CreateMarket";
 import CreateProposal from "./pages/CreateProposal";
 import Portfolio from "./pages/Portfolio";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/markets" element={<Markets />} />
             <Route path="/markets/:id" element={<MarketDetail />} />
+            <Route path="/communities" element={<Communities />} />
             <Route path="/create" element={<CreateMarket />} />
             <Route path="/markets/:id/propose" element={<CreateProposal />} />
             <Route path="/portfolio" element={<Portfolio />} />
