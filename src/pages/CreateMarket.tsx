@@ -5,9 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
+import { CONTRACT_ADDRESSES, MARKET_ABI } from '@/lib/contracts';
+import { parseEther } from 'viem';
+import { useToast } from '@/hooks/use-toast';
 
 const CreateMarket = () => {
   const [formData, setFormData] = useState({
@@ -17,14 +21,100 @@ const CreateMarket = () => {
     endDate: '',
     minDeposit: '',
   });
+  const [isCreating, setIsCreating] = useState(false);
+  
+  const { address } = useAccount();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { writeContract, data: hash, error, isPending } = useWriteContract();
+  
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  });
 
-  const categories = ['Crypto', 'AI', 'Stocks', 'Economics', 'Politics', 'Sports', 'Tech', 'Other'];
+  const categories = ['crypto', 'gamers', 'sports', 'traders', 'politics', 'tech'];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Creating market:', formData);
+    
+    if (!address) {
+      toast({
+        title: "Wallet not connected",
+        description: "Please connect your wallet to create a market.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.title || !formData.description || !formData.category || !formData.endDate || !formData.minDeposit) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsCreating(true);
+
+    try {
+      const endTime = Math.floor(new Date(formData.endDate).getTime() / 1000);
+      const minDeposit = parseEther(formData.minDeposit);
+
+      // Call the contract to create market
+      writeContract({
+        address: CONTRACT_ADDRESSES.MARKET as `0x${string}`,
+        abi: MARKET_ABI,
+        functionName: 'createMarket',
+        args: [{
+          title: formData.title,
+          description: formData.description,
+          category: formData.category,
+          resolver: CONTRACT_ADDRESSES.BASIC_MARKET_RESOLVER as `0x${string}`,
+          endTime: BigInt(endTime),
+          minDeposit: minDeposit,
+          marketToken: CONTRACT_ADDRESSES.VUSD as `0x${string}`,
+        }],
+      } as any);
+
+      toast({
+        title: "Creating Market...",
+        description: "Your transaction has been submitted. Please wait for confirmation.",
+      });
+
+    } catch (err) {
+      console.error('Error creating market:', err);
+      toast({
+        title: "Creation Failed",
+        description: "There was an error creating your market. Please try again.",
+        variant: "destructive",
+      });
+      setIsCreating(false);
+    }
   };
+
+  // Handle transaction confirmation
+  useEffect(() => {
+    if (isConfirmed && isCreating) {
+      setIsCreating(false);
+      toast({
+        title: "Market Created Successfully!",
+        description: "Your prediction market has been deployed to the blockchain.",
+      });
+      navigate('/markets');
+    }
+  }, [isConfirmed, isCreating, toast, navigate]);
+
+  useEffect(() => {
+    if (error && isCreating) {
+      toast({
+        title: "Transaction Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      setIsCreating(false);
+    }
+  }, [error, isCreating, toast]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -89,7 +179,7 @@ const CreateMarket = () => {
                     <SelectContent className="bg-card border-border">
                       {categories.map((category) => (
                         <SelectItem key={category} value={category}>
-                          {category}
+                          {category.charAt(0).toUpperCase() + category.slice(1)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -114,7 +204,7 @@ const CreateMarket = () => {
               {/* Minimum Deposit */}
               <div className="space-y-2">
                 <Label htmlFor="minDeposit" className="text-foreground font-medium">
-                  Minimum Proposal Deposit (ETH) *
+                  Minimum Proposal Deposit (AVAX) *
                 </Label>
                 <Input
                   id="minDeposit"
@@ -147,8 +237,19 @@ const CreateMarket = () => {
 
               {/* Submit Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Button type="submit" className="btn-quantum flex-1">
-                  Create Market
+                <Button 
+                  type="submit" 
+                  className="btn-quantum flex-1" 
+                  disabled={isPending || isConfirming || isCreating}
+                >
+                  {isPending || isConfirming || isCreating ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      {isCreating ? 'Creating Market...' : 'Confirming...'}
+                    </>
+                  ) : (
+                    'Create Market'
+                  )}
                 </Button>
                 <Button type="button" variant="outline" className="btn-outline-quantum flex-1">
                   Preview Market

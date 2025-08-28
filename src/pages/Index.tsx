@@ -128,7 +128,7 @@ const Index = () => {
             </h1>
             <p className="text-xl text-gray-200 mb-8 max-w-3xl mx-auto">
               Trade on the outcomes of real-world events. From crypto prices to political elections, 
-              make informed predictions and earn rewards on Quantum Markets.
+              make informed predictions and earn rewards on SpectraQ.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/markets">

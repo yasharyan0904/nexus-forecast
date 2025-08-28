@@ -9,6 +9,8 @@ import { MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { COMMUNITIES } from '@/lib/contracts';
 import { useAccount, useReadContract } from 'wagmi';
 import { MarketCard } from '@/components/markets/MarketCard';
+import { CommunityChat } from '@/components/communities/CommunityChat';
+import { CreateCommunity } from '@/components/communities/CreateCommunity';
 
 const Communities = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -150,22 +152,32 @@ const Communities = () => {
               </CardContent>
             </Card>
 
-            {address && (
-              <Card className="gradient-card border-border/50">
-                <CardContent className="pt-6">
+            <Card className="gradient-card border-border/50">
+              <CardContent className="pt-6 space-y-3">
+                <CreateCommunity />
+                {address && (
                   <Link to="/create">
                     <Button className="w-full btn-quantum">
                       <PlusIcon className="w-4 h-4 mr-2" />
                       Create Market
                     </Button>
                   </Link>
-                </CardContent>
-              </Card>
-            )}
+                )}
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Markets Grid */}
-          <div className="lg:col-span-3">
+          {/* Markets Grid and Chat */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Community Chat */}
+            {selectedCategory && (
+              <CommunityChat 
+                communityId={selectedCategory}
+                communityName={COMMUNITIES.find(c => c.id === selectedCategory)?.name || 'Community'}
+              />
+            )}
+            
+            {/* Markets */}
             {filteredMarkets.length === 0 ? (
               <Card className="gradient-card border-border/50">
                 <CardContent className="text-center py-12">
