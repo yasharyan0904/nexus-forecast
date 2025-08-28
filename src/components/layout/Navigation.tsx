@@ -20,10 +20,10 @@ export function Navigation() {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <div className="bg-gradient-primary w-8 h-8 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">Q</span>
+              <span className="text-white font-bold text-lg">S</span>
             </div>
             <span className="text-xl font-bold text-foreground">
-              Quantum Markets
+              SpectraQ
             </span>
           </Link>
 
